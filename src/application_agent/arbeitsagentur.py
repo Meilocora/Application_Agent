@@ -4,6 +4,7 @@ Docs (community-maintained): https://github.com/bundesAPI/jobsuche-api
 """
 
 import base64
+import re
 
 import httpx
 
@@ -13,6 +14,8 @@ BASE_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service"
 # Public key, identical for everyone and documented in the link above - not a secret.
 HEADERS = {"X-API-Key": "jobboerse-jobsuche"}
 PUBLIC_DETAIL_URL = "https://www.arbeitsagentur.de/jobsuche/jobdetail/{refnr}"
+# Many ads link their application form in the text, e.g. "[Zum Bewerbungsformular](https://...)".
+_APPLY_LINK = re.compile(r"\[[^\]]*(?:bewerb|apply|application)[^\]]*\]\((https?://[^)\s]+)\)", re.IGNORECASE)
 
 # How our employment types map to the API's filters.
 # angebotsart: 1 = regular employment, 34 = internship/trainee - the API files almost all
@@ -44,7 +47,7 @@ def _to_posting(item: dict) -> JobPosting:
         title=item.get("stellenangebotsTitel", ""),
         company=item.get("firma", "unbekannt"),
         location=_location(item),
-        url=item.get("externeUrl") or PUBLIC_DETAIL_URL.format(refnr=refnr),
+        url=PUBLIC_DETAIL_URL.format(refnr=refnr),
         remote=item.get("homeofficemoeglich"),
         published=item.get("datumErsteVeroeffentlichung"),
         latitude=first_location.get("breite"),
@@ -78,4 +81,18 @@ async def fetch_details(job: JobPosting) -> JobPosting:
     async with httpx.AsyncClient(base_url=BASE_URL, headers=HEADERS, timeout=20) as client:
         response = await client.get(f"/pc/v4/jobdetails/{encoded}")
     response.raise_for_status()
-    return job.model_copy(update={"description": response.json().get("stellenangebotsBeschreibung", "")}) # Add the full job description to the posting.
+    details = response.json()
+    description = details.get("stellenangebotsBeschreibung", "")
+    return job.model_copy(
+        update={"description": description, "application_url": _application_url(details, description)}
+    )
+
+
+def _application_url(details: dict, description: str) -> str:
+    """Link to apply, if the ad has one. Only the details endpoint knows it, not the search."""
+    # Set for ads that are hosted elsewhere (about 1 in 6, tested 2026-10-23). Note the
+    # spelling "URL". "allianzpartnerUrl" is no alternative: it is just the partner's homepage.
+    if details.get("externeURL"):
+        return details["externeURL"]
+    match = _APPLY_LINK.search(description)
+    return match.group(1) if match else ""

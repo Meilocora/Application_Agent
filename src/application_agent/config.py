@@ -27,3 +27,8 @@ MAX_PARALLEL_MATCHES = int(os.getenv("APP_MAX_PARALLEL_MATCHES", "4"))
 DATA_DIR = Path(os.getenv("APP_DATA_DIR", ROOT_DIR / "data"))
 # Your CV, certificates, project descriptions (PDF, Markdown or text).
 PROFILE_DIR = Path(os.getenv("APP_PROFILE_DIR", DATA_DIR / "profile"))
+# All assessed postings - the single source of truth. The Excel file is only a view of it.
+DB_PATH = DATA_DIR / "jobs.db"
+EXCEL_PATH = DATA_DIR / "jobs.xlsx"
+# Cover letters and search reports (.docx).
+OUTPUT_DIR = DATA_DIR / "output"

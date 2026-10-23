@@ -1,17 +1,11 @@
-"""Write cover letters with a writer/reviewer loop and save them to disk."""
-
-import re
-from datetime import date
-from pathlib import Path
+"""Write cover letters with a writer/reviewer loop. Saving them is done in documents.py."""
 
 from agents import Runner, trace
 
-from application_agent.config import DATA_DIR, MAX_REVISIONS
+from application_agent.config import MAX_REVISIONS
 from application_agent.job_agents import letter_reviewer, letter_writer
 from application_agent.matching import MAX_DESCRIPTION_CHARS, PRIVATE_FIELDS
 from application_agent.models import CandidateProfile, CoverLetter, LetterReview, ScoredJob, SearchPreferences
-
-OUTPUT_DIR = DATA_DIR / "output"
 
 
 def _profile_block(profile: CandidateProfile) -> str:
@@ -66,28 +60,3 @@ async def write_cover_letter(
             letter = (await Runner.run(letter_writer, revision_input)).final_output
 
     return letter, reviews
-
-
-def save_cover_letter(
-    letter: CoverLetter, profile: CandidateProfile, preferences: SearchPreferences, scored: ScoredJob
-) -> Path:
-    """Save the letter as text. The sender block is built here, so the address never reaches the LLM."""
-    header = "\n".join(
-        [
-            profile.name,
-            preferences.address,
-            "",
-            scored.job.company,
-            scored.job.location,
-            "",
-            f"{date.today():%d.%m.%Y}",
-        ]
-    )
-    content = f"{header}\n\n{letter.as_text()}\n{profile.name}\n"
-
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    # Keep only letters, digits, - and _ so the file name is valid on every OS.
-    safe_name = re.sub(r"[^\w-]+", "_", f"{scored.job.company}_{scored.job.title}")[:80]
-    path = OUTPUT_DIR / f"{safe_name}.txt"
-    path.write_text(content, encoding="utf-8")
-    return path

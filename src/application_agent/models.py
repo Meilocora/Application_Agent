@@ -20,6 +20,16 @@ class TravelMode(StrEnum):
     TRANSIT = "public transport"
 
 
+class JobStatus(StrEnum):
+    """Where the user stands with a posting - set by the user, never by an LLM."""
+
+    NEW = "new"
+    APPLIED = "applied"
+    INTERVIEW = "interview"
+    REJECTED = "rejected"
+    DISMISSED = "dismissed"  # not interested
+
+
 class SearchPreferences(BaseModel):
     """What the user is looking for - entered by the user in the setup, never by an LLM."""
 
@@ -49,7 +59,9 @@ class JobPosting(BaseModel):
     title: str
     company: str
     location: str = ""
-    url: str = ""
+    url: str = ""  # the ad on the job board
+    # Where to apply (employer's career page or application form). Empty if the job board doesn't know.
+    application_url: str = ""
     description: str = ""
     remote: bool | None = None
     published: str | None = None

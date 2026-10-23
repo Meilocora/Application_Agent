@@ -10,14 +10,18 @@ requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
     "openai-agents>=0.24.0",
+    "openpyxl>=3.1.5",
     "pydantic>=2.14.1",
     "pypdf>=6.21.2",
+    "python-docx>=1.2.0",
     "python-dotenv>=1.2.4",
     "tzdata>=2026.5",
 ]
 
 [project.scripts]
 application-agent = "application_agent:main"
+cover-letter = "application_agent:cover_letter_main"
+job-status = "application_agent:job_status_main"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
