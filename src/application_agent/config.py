@@ -12,6 +12,13 @@ load_dotenv(override=True)
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 FAST_MODEL = os.getenv("APP_FAST_MODEL", "gpt-5.4-mini")
+# Stronger model, only used for writing cover letters - quality matters more than cost there.
+WRITER_MODEL = os.getenv("APP_WRITER_MODEL", "gpt-5.5")
+# Each cover letter draft is reviewed; at most this many revisions follow.
+MAX_REVISIONS = int(os.getenv("APP_MAX_REVISIONS", "2"))
+
+# Optional: without it, commute times are skipped.
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
 
 # How many postings the scout shortlists, and how many of them are assessed at the same time.
 MAX_SHORTLIST = int(os.getenv("APP_MAX_SHORTLIST", "8"))

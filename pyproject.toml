@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.14.1",
     "pypdf>=6.21.2",
     "python-dotenv>=1.2.4",
+    "tzdata>=2026.5",
 ]
 
 [project.scripts]

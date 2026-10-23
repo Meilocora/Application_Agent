@@ -4,7 +4,7 @@ import httpx
 
 from application_agent.config import DATA_DIR
 from application_agent.geo import geocode
-from application_agent.models import CandidateProfile, EmploymentType, SearchPreferences
+from application_agent.models import CandidateProfile, EmploymentType, SearchPreferences, TravelMode
 
 PREFERENCES_FILE = DATA_DIR / "preferences.json"
 
@@ -50,6 +50,24 @@ def _ask_choice(question: str, options: list[str]) -> int:
         print(f"Please enter a number between 1 and {len(options)}.")
 
 
+def _ask_multi_choice(question: str, options: list[str]) -> list[int]:
+    """Like _ask_choice, but several comma-separated numbers are allowed."""
+    print(question)
+    for number, option in enumerate(options, start=1):
+        print(f"  {number}) {option}")
+    while True:
+        parts = [part.strip() for part in input("> ").split(",")]
+        if parts and all(part.isdigit() and 1 <= int(part) <= len(options) for part in parts):
+            return list(dict.fromkeys(int(part) - 1 for part in parts))
+        print(f"Please enter numbers between 1 and {len(options)}, e.g. '1, 3'.")
+
+
+def _ask_number(question: str, default: int) -> int:
+    print(f"{question} [{default}]:")
+    answer = input("> ").strip()
+    return int(answer) if answer.isdigit() else default
+
+
 def _ask_roles(suggestions: list[str]) -> list[str]:
     print("\nBased on your profile, these roles were suggested:")
     for number, role in enumerate(suggestions, start=1):
@@ -72,15 +90,23 @@ def run_setup(profile: CandidateProfile) -> SearchPreferences:
     """Ask the user for their search preferences in the terminal and save them."""
     print("\n=== Setup ===\n")
     types = list(EmploymentType)
-    employment_type = types[_ask_choice("What kind of position are you looking for?", types)]
-
+    type_names = [t.value for t in types]  # or [str(t) for t in types] if no .value
+    employment_type = types[_ask_choice("What kind of position are you looking for?", type_names)]
+    
     target_roles = _ask_roles(profile.target_roles)
 
-    print("\nYour address incl. postal code (stays on your machine, used for search and distance):")
+    print("\nYour address incl. postal code (stays on your machine, used for search and commute times):")
     address = input("> ").strip()
 
-    print("\nSearch radius in km [30]:")
-    radius = input("> ").strip()
+    radius_km = _ask_number("\nSearch radius in km", default=30)
+
+    modes = list(TravelMode)
+    chosen = _ask_multi_choice(
+        "\nWhich means of transport do you use? (comma-separated, e.g. '2, 3')", [m.value for m in modes]
+    )
+    travel_modes = [modes[index] for index in chosen]
+
+    max_commute_minutes = _ask_number("\nMaximum commute time (one way) in minutes", default=45)
 
     print("\nAnything else? (e.g. 'remote preferred', 'no ITIL / service management') [none]:")
     wishes = input("> ").strip()
@@ -89,7 +115,9 @@ def run_setup(profile: CandidateProfile) -> SearchPreferences:
         employment_type=employment_type,
         target_roles=target_roles,
         address=address,
-        radius_km=int(radius) if radius.isdigit() else 30,
+        radius_km=radius_km,
+        travel_modes=travel_modes,
+        max_commute_minutes=max_commute_minutes,
         wishes=wishes,
     )
     save_preferences(preferences)

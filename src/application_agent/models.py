@@ -14,14 +14,22 @@ class EmploymentType(StrEnum):
     INTERNSHIP = "internship"
 
 
+class TravelMode(StrEnum):
+    CAR = "car"
+    BICYCLE = "bicycle"
+    TRANSIT = "public transport"
+
+
 class SearchPreferences(BaseModel):
     """What the user is looking for - entered by the user in the setup, never by an LLM."""
 
     employment_type: EmploymentType
     target_roles: list[str]
-    # Full address, kept local for distance calculation. Never sent to the LLM.
+    # Full address, kept local for commute calculation. Never sent to the LLM.
     address: str
-    radius_km: int = 30
+    radius_km: int = 30  # coarse pre-filter for the job board, which only knows km
+    travel_modes: list[TravelMode] = Field(default_factory=lambda: [TravelMode.TRANSIT]) # default_factory needed because of mutable default value
+    max_commute_minutes: int = 45
     wishes: str = ""
     # Coordinates of the address, geocoded once and cached here. None = not geocoded yet.
     home_latitude: float | None = None
@@ -119,5 +127,33 @@ class JobMatch(BaseModel):
 class ScoredJob(BaseModel):
     job: JobPosting
     match: JobMatch
-    # Straight-line distance from the candidate's home; None if coordinates are missing.
-    distance_km: float | None = None
+    # Commute time in minutes per travel mode; modes without a route are missing.
+    commute_minutes: dict[TravelMode, int] = Field(default_factory=dict)
+
+    @property
+    def fastest_commute(self) -> tuple[TravelMode, int] | None:
+        if not self.commute_minutes:
+            return None
+        return min(self.commute_minutes.items(), key=lambda item: item[1])
+
+
+class CoverLetter(BaseModel):
+    """A cover letter draft. The sender's address block is added by code, not by the model."""
+
+    subject: str = Field(description="Subject line, e.g. 'Bewerbung als Werkstudent Softwareentwicklung'.")
+    salutation: str = Field(description="Use the contact person's name if the posting names one.")
+    paragraphs: list[str] = Field(description="3-5 paragraphs of body text.")
+    closing: str = Field(description="Only the closing formula, e.g. 'Mit freundlichen Grüßen' - no name.")
+
+    def as_text(self) -> str:
+        return "\n\n".join([self.subject, self.salutation, *self.paragraphs, self.closing])
+
+
+class LetterReview(BaseModel):
+    """The reviewer's verdict on a cover letter draft."""
+
+    approved: bool = Field(description="True only if there are no unsupported claims and it is ready to send.")
+    unsupported_claims: list[str] = Field(
+        description="Factual statements about the candidate that are NOT backed by the profile."
+    )
+    feedback: list[str] = Field(description="Concrete, actionable improvement suggestions.")
