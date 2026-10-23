@@ -1,6 +1,9 @@
 """Interactive setup that asks the user what they are looking for, and its storage."""
 
+import httpx
+
 from application_agent.config import DATA_DIR
+from application_agent.geo import geocode
 from application_agent.models import CandidateProfile, EmploymentType, SearchPreferences
 
 PREFERENCES_FILE = DATA_DIR / "preferences.json"
@@ -15,6 +18,25 @@ def load_preferences() -> SearchPreferences | None:
 def save_preferences(preferences: SearchPreferences) -> None:
     PREFERENCES_FILE.parent.mkdir(parents=True, exist_ok=True)
     PREFERENCES_FILE.write_text(preferences.model_dump_json(indent=2), encoding="utf-8")
+
+
+def ensure_home_coordinates(preferences: SearchPreferences) -> SearchPreferences:
+    """Geocode the address once and store the coordinates, so it never has to be sent again."""
+    if preferences.home_latitude is not None or not preferences.address:
+        return preferences
+    try:
+        coordinates = geocode(preferences.address)
+    except httpx.HTTPError as exc:
+        print(f"Geocoding failed ({exc}) - distances are not available this time.")
+        return preferences
+    if coordinates is None:
+        print("Address not found - distances are not available. Check it with `application-agent setup`.")
+        return preferences
+
+    latitude, longitude = coordinates
+    updated = preferences.model_copy(update={"home_latitude": latitude, "home_longitude": longitude})
+    save_preferences(updated)
+    return updated
 
 
 def _ask_choice(question: str, options: list[str]) -> int:

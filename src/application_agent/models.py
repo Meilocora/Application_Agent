@@ -2,6 +2,7 @@
 
 import re
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -22,6 +23,9 @@ class SearchPreferences(BaseModel):
     address: str
     radius_km: int = 30
     wishes: str = ""
+    # Coordinates of the address, geocoded once and cached here. None = not geocoded yet.
+    home_latitude: float | None = None
+    home_longitude: float | None = None
 
     @property # Returns the postal code extracted from the full address for privacy.
     def search_location(self) -> str:
@@ -41,6 +45,8 @@ class JobPosting(BaseModel):
     description: str = ""
     remote: bool | None = None
     published: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -91,3 +97,27 @@ class CandidateProfile(BaseModel):
         description="5-8 roles the candidate is a plausible fit for, in German job board wording, "
         "e.g. 'Python Entwickler'. Cover different directions the candidate could take."
     )
+
+
+class JobMatch(BaseModel):
+    """Assessment of how well one posting fits the candidate."""
+
+    score: int = Field(ge=0, le=100, description="Overall fit from 0 to 100.")
+    verdict: Literal["very good", "good", "medium", "weak"]
+    fits_employment_type: bool = Field(
+        description="Whether the posting is the employment type the candidate is looking for."
+    )
+    summary: str = Field(description="2-3 sentences on why this job fits or not.")
+    matching_skills: list[str]
+    missing_skills: list[str]
+    selling_points: list[str] = Field(
+        description="Concrete facts from the profile that should be highlighted in a cover letter."
+    )
+    red_flags: list[str] = Field(description="E.g. seniority mismatch, language, unwanted tasks.")
+
+
+class ScoredJob(BaseModel):
+    job: JobPosting
+    match: JobMatch
+    # Straight-line distance from the candidate's home; None if coordinates are missing.
+    distance_km: float | None = None

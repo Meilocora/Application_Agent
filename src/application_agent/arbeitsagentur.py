@@ -3,6 +3,8 @@
 Docs (community-maintained): https://github.com/bundesAPI/jobsuche-api
 """
 
+import base64
+
 import httpx
 
 from application_agent.models import EmploymentType, JobPosting
@@ -36,6 +38,7 @@ def _location(item: dict) -> str:
 def _to_posting(item: dict) -> JobPosting:
     """Translate one result of the API into our own JobPosting format."""
     refnr = item["referenznummer"]
+    first_location = (item.get("stellenlokationen") or [{}])[0]
     return JobPosting(
         id=refnr,
         title=item.get("stellenangebotsTitel", ""),
@@ -44,6 +47,8 @@ def _to_posting(item: dict) -> JobPosting:
         url=item.get("externeUrl") or PUBLIC_DETAIL_URL.format(refnr=refnr),
         remote=item.get("homeofficemoeglich"),
         published=item.get("datumErsteVeroeffentlichung"),
+        latitude=first_location.get("breite"),
+        longitude=first_location.get("laenge"),
     )
 
 
@@ -64,3 +69,13 @@ async def search_jobs(
         response = await client.get("/pc/v6/jobs", params=params)
     response.raise_for_status()
     return [_to_posting(item) for item in response.json().get("ergebnisliste", [])]
+
+
+async def fetch_details(job: JobPosting) -> JobPosting:
+    """Return a copy of ``job`` with the full ad text (search results don't contain it)."""
+    # The API expects the reference number base64-encoded in the URL.
+    encoded = base64.b64encode(job.id.encode()).decode()
+    async with httpx.AsyncClient(base_url=BASE_URL, headers=HEADERS, timeout=20) as client:
+        response = await client.get(f"/pc/v4/jobdetails/{encoded}")
+    response.raise_for_status()
+    return job.model_copy(update={"description": response.json().get("stellenangebotsBeschreibung", "")}) # Add the full job description to the posting.

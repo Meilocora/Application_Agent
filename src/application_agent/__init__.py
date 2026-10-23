@@ -1,12 +1,13 @@
 import asyncio
 import sys
 
-from agents import Runner
+from agents import Runner, trace
 
 from application_agent.context import JobSearchContext
 from application_agent.job_agents import job_scout
+from application_agent.matching import match_jobs
 from application_agent.models import SearchResult
-from application_agent.preferences import load_preferences, run_setup
+from application_agent.preferences import ensure_home_coordinates, load_preferences, run_setup
 from application_agent.profile import get_profile
 
 
@@ -17,23 +18,31 @@ async def run(force_setup: bool) -> None:
     preferences = None if force_setup else load_preferences()
     if preferences is None:  # first start, or `application-agent setup`
         preferences = run_setup(profile)
+    preferences = ensure_home_coordinates(preferences)
     print(f"Looking for: {preferences.employment_type} | {', '.join(preferences.target_roles)}\n")
 
-    context = JobSearchContext(profile=profile, preferences=preferences)
-    result = await Runner.run(job_scout, "Find matching jobs for me.", context=context)
-    search: SearchResult = result.final_output
+    # One trace for the whole workflow instead of one per agent run.
+    with trace("Job search"):
+        context = JobSearchContext(profile=profile, preferences=preferences)
+        result = await Runner.run(job_scout, "Find matching jobs for me.", context=context)
+        search: SearchResult = result.final_output
+        print(f"Strategy: {search.strategy}")
 
-    print(f"Strategy: {search.strategy}")
-    print(f"{len(context.postings)} postings found in total.\n")
+        # Drop ids the model may have invented - never trust LLM output blindly.
+        shortlist = [context.postings[pick.job_id] for pick in search.picks if pick.job_id in context.postings]
+        print(f"{len(context.postings)} postings found, {len(shortlist)} shortlisted. Assessing ...\n")
 
-    for pick in search.picks:
-        job = context.postings.get(pick.job_id)
-        if job is None:  # the model invented an id - never trust LLM output blindly
-            print(f"Unknown id {pick.job_id!r}, skipped.")
-            continue
-        print(f"{job.title} | {job.company} | {job.location}")
-        print(f"   Why: {pick.reason}")
-        print(f"   {job.url}\n")
+        scored_jobs = await match_jobs(profile, preferences, shortlist)
+
+    for scored in scored_jobs:
+        job, match = scored.job, scored.match
+        type_warning = "" if match.fits_employment_type else "  [wrong employment type]"
+        distance = f"{scored.distance_km:.0f} km" if scored.distance_km is not None else "? km"
+        print(f"{match.score:>3} | {distance:>6} | {job.title} | {job.company}{type_warning}")
+        print(f"      {match.summary}")
+        if match.red_flags:
+            print(f"      Red flags: {'; '.join(match.red_flags)}")
+        print(f"      {job.url}\n")
 
 
 def main() -> None:
