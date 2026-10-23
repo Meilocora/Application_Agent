@@ -5,12 +5,23 @@ Docs (community-maintained): https://github.com/bundesAPI/jobsuche-api
 
 import httpx
 
-from application_agent.models import JobPosting
+from application_agent.models import EmploymentType, JobPosting
 
 BASE_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service"
 # Public key, identical for everyone and documented in the link above - not a secret.
 HEADERS = {"X-API-Key": "jobboerse-jobsuche"}
 PUBLIC_DETAIL_URL = "https://www.arbeitsagentur.de/jobsuche/jobdetail/{refnr}"
+
+# How our employment types map to the API's filters.
+# angebotsart: 1 = regular employment, 34 = internship/trainee - the API files almost all
+# working student jobs under 34, not 1 (tested 2026-10-23: 24 of 25 results).
+# arbeitszeit: tz = part-time.
+_EMPLOYMENT_FILTERS: dict[EmploymentType, dict] = {
+    EmploymentType.FULL_TIME: {"angebotsart": 1, "arbeitszeit": "vz"},
+    EmploymentType.PART_TIME: {"angebotsart": 1, "arbeitszeit": "tz"},
+    EmploymentType.WORKING_STUDENT: {"angebotsart": 34},
+    EmploymentType.INTERNSHIP: {"angebotsart": 34},
+}
 
 
 def _location(item: dict) -> str:
@@ -37,14 +48,14 @@ def _to_posting(item: dict) -> JobPosting:
 
 
 async def search_jobs(
-    what: str, where: str | None = None, radius_km: int = 30, size: int = 10
+    what: str,
+    where: str | None = None,
+    radius_km: int = 30,
+    employment_type: EmploymentType = EmploymentType.FULL_TIME,
+    size: int = 10,
 ) -> list[JobPosting]:
     """Search job ads on the job board of the Bundesagentur fuer Arbeit."""
-    params = {
-        "was": what,
-        "angebotsart": 1,  # 1 = regular employment (no apprenticeships, no self-employment)
-        "size": size,
-    }
+    params = {"was": what, "size": size, **_EMPLOYMENT_FILTERS[employment_type]}
     if where:
         params["wo"] = where
         params["umkreis"] = radius_km
