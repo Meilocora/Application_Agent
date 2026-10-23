@@ -1,2 +1,37 @@
+# --- Secrets ---------------------------------------------------------------
 .env
-.python-version
+.env.*
+!.env.example
+
+# --- Personal data: CV, certificates, generated cover letters, database ----
+data/
+
+# --- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- Virtual environment ---------------------------------------------------
+.venv/
+
+# --- Tool caches -----------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Editors / OS ----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Claude Code: personal settings (shared project settings stay tracked) --
+.claude/settings.local.json
+
+# --- Gradio (upcoming UI) --------------------------------------------------
+.gradio/
+flagged/

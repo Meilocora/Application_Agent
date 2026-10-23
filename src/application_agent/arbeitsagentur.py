@@ -36,7 +36,9 @@ def _to_posting(item: dict) -> JobPosting:
     )
 
 
-def search_jobs(what: str, where: str | None = None, radius_km: int = 30, size: int = 10) -> list[JobPosting]:
+async def search_jobs(
+    what: str, where: str | None = None, radius_km: int = 30, size: int = 10
+) -> list[JobPosting]:
     """Search job ads on the job board of the Bundesagentur fuer Arbeit."""
     params = {
         "was": what,
@@ -47,6 +49,7 @@ def search_jobs(what: str, where: str | None = None, radius_km: int = 30, size: 
         params["wo"] = where
         params["umkreis"] = radius_km
 
-    response = httpx.get(f"{BASE_URL}/pc/v6/jobs", headers=HEADERS, params=params, timeout=20)
+    async with httpx.AsyncClient(base_url=BASE_URL, headers=HEADERS, timeout=20) as client:
+        response = await client.get("/pc/v6/jobs", params=params)
     response.raise_for_status()
     return [_to_posting(item) for item in response.json().get("ergebnisliste", [])]
