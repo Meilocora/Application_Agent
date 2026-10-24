@@ -54,8 +54,9 @@ def save_jobs(scored_jobs: list[ScoredJob]) -> None:
          now, now, s.model_dump_json())
         for s in scored_jobs
     ]
-    # closing() closes the connection after commit or rollback
+    
     with closing(_connect()) as connection, connection:
+        # Insert or update the jobs in the database. The ON CONFLICT clause ensures that existing entries are updated rather than duplicated.
         connection.executemany(
             """
             INSERT INTO jobs (id, title, company, score, url, application_url, found_at, updated_at, data)

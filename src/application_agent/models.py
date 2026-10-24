@@ -157,6 +157,7 @@ class CoverLetter(BaseModel):
     paragraphs: list[str] = Field(description="3-5 paragraphs of body text.")
     closing: str = Field(description="Only the closing formula, e.g. 'Mit freundlichen Grüßen' - no name.")
 
+    # Convert the cover letter to plain text with sections separated by double newlines.
     def as_text(self) -> str:
         return "\n\n".join([self.subject, self.salutation, *self.paragraphs, self.closing])
 

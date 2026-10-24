@@ -13,6 +13,7 @@ from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
+from docx.styles.style import ParagraphStyle
 from docx.text.paragraph import Paragraph
 
 from application_agent.config import OUTPUT_DIR
@@ -36,12 +37,15 @@ def _output_path(name: str) -> Path:
 
 
 def _new_document():
+    """Create a new Word document with standard formatting and DIN 5008 margins."""
     document = Document()
     section = document.sections[0]
     # DIN 5008 margins - harmless for the report as well.
     section.left_margin, section.right_margin = Cm(2.5), Cm(2)
     section.top_margin, section.bottom_margin = Cm(2), Cm(2)
     normal = document.styles["Normal"]
+    # typed as any style (also table/numbering styles without fonts); "Normal" is a paragraph style
+    assert isinstance(normal, ParagraphStyle)
     normal.font.name, normal.font.size = "Arial", Pt(11)
     normal.paragraph_format.space_after = Pt(0)
     return document
@@ -85,17 +89,21 @@ def save_cover_letter(
         sender.add_run(f"\n{line}")
     sender.paragraph_format.space_after = Pt(36)
 
+    # Recipient block with company and location.
     recipient = document.add_paragraph("\n".join(filter(None, [scored.job.company, scored.job.location])))
     recipient.paragraph_format.space_after = Pt(24)
 
+    # Date line
     date_line = document.add_paragraph(f"{date.today():%d.%m.%Y}")
     date_line.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     date_line.paragraph_format.space_after = Pt(24)
 
+    # Subject line
     subject = document.add_paragraph()
     subject.add_run(letter.subject).bold = True
     subject.paragraph_format.space_after = Pt(18)
 
+    # Letter body: salutation, paragraphs, closing
     for text in [letter.salutation, *letter.paragraphs, letter.closing]:
         paragraph = document.add_paragraph(text)
         paragraph.paragraph_format.space_after = Pt(10)
@@ -103,7 +111,7 @@ def save_cover_letter(
     document.add_paragraph(profile.name)
 
     path = _output_path(f"cover_letter_{scored.job.company}_{scored.job.title}")
-    document.save(path)
+    document.save(str(path))
     return path
 
 
@@ -113,6 +121,7 @@ def save_cover_letter(
 
 
 def _add_labeled(document, label: str, text: str, color: RGBColor | None = None) -> None:
+    """Add a labeled paragraph to the document, optionally with colored text."""
     paragraph = document.add_paragraph()
     paragraph.add_run(f"{label}: ").bold = True
     run = paragraph.add_run(text)
@@ -122,6 +131,7 @@ def _add_labeled(document, label: str, text: str, color: RGBColor | None = None)
 
 
 def _add_job(document, number: int, scored: ScoredJob, is_new: bool, preferences: SearchPreferences) -> None:
+    """Add a job entry to the search report document."""
     job, match = scored.job, scored.match
     document.add_heading(f"{number}. {job.title}", level=2)
 
@@ -168,18 +178,21 @@ def save_search_report(
     document = _new_document()
     document.add_heading(f"Job search {date.today():%d.%m.%Y}", level=1)
 
+    # Introductory paragraph with summary of search results and preferences.
     intro = document.add_paragraph(
         f"{len(scored_jobs)} matching postings, {len(new_ids)} of them new. "
         f"Looking for: {preferences.employment_type} | {', '.join(preferences.target_roles)}"
     )
     intro.paragraph_format.space_after = Pt(6)
+    # Search strategy section.
     _add_labeled(document, "Search strategy", strategy)
     hint = document.add_paragraph("Write a cover letter with: uv run cover-letter <ID>")
     hint.runs[0].font.color.rgb = _GREY
 
+    # Job entries section.
     for number, scored in enumerate(scored_jobs, start=1):
         _add_job(document, number, scored, scored.job.id in new_ids, preferences)
 
     path = _output_path("job_search")
-    document.save(path)
+    document.save(str(path))
     return path

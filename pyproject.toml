@@ -26,3 +26,18 @@ job-status = "application_agent:job_status_main"
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "respx>=0.23.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# async test functions run without an extra @pytest.mark.asyncio decorator
+asyncio_mode = "auto"
+markers = ["live: calls the real Arbeitsagentur API - run explicitly with `uv run pytest -m live`"]
+# Live tests are skipped by default: they need internet and depend on today's job ads.
+addopts = "-m 'not live'"

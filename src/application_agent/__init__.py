@@ -15,18 +15,17 @@ from application_agent.preferences import ensure_home_coordinates, load_preferen
 from application_agent.profile import get_profile
 from application_agent.storage import load_jobs, save_jobs, set_status
 
-# TODO: Connect more APIs
+# TODO: Tests
+# TODO: KPIs for evaluating workflows
+# TODO: Evals, Costs, Latency
+# TODO: Monitoring
 
-# TODO: Maybe also search for usefull infos about the company (e.g. impact for a future career, chances for writing a masters thesis)
+# TODO: Connect more APIs
 
 # TODO: Gradio UI with password security or comparable
 # TODO: Guardrails
-# TODO: Tests
 
-# TODO: KPIs for evaluating workflows
-# TODO: Somehow calculate average costs of the workflows and try to improve these
-
-
+# TODO: Search for usefull infos about the company (e.g. impact for a future career, chances for writing a masters thesis)
 
 async def run(force_setup: bool) -> None:
     profile = await get_profile()
