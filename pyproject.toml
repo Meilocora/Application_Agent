@@ -29,9 +29,11 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.414",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "respx>=0.23.1",
+    "ruff>=0.17.2",
 ]
 
 [tool.pytest.ini_options]
@@ -41,3 +43,18 @@ asyncio_mode = "auto"
 markers = ["live: calls the real Arbeitsagentur API - run explicitly with `uv run pytest -m live`"]
 # Live tests are skipped by default: they need internet and depend on today's job ads.
 addopts = "-m 'not live'"
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/F: errors and unused or undefined names, I: import order, B: likely bugs, UP: modern syntax
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # long lines - mostly comments at the end of a line
+
+[tool.pyright]
+# The same checker that runs inside Pylance - so CI reports what VS Code shows.
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"

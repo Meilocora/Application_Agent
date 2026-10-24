@@ -1,0 +1,31 @@
+# Runs lint, type check and tests on every push and pull request.
+# Results: the "Actions" tab on GitHub, and a green check or red cross next to each commit.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true # reuse downloaded packages between runs
+
+      # --locked: install exactly what uv.lock says, and fail if the lock file is outdated.
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Lint (ruff)
+        run: uv run ruff check
+
+      - name: Type check (pyright, same as Pylance)
+        run: uv run pyright
+
+      # Live tests are excluded via addopts in pyproject.toml - CI never calls the real API.
+      - name: Tests
+        run: uv run pytest
