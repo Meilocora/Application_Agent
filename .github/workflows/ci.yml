@@ -9,6 +9,10 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # The coverage action writes its badge branch and comments on pull requests.
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v7
 
@@ -28,4 +32,14 @@ jobs:
 
       # Live tests are excluded via addopts in pyproject.toml - CI never calls the real API.
       - name: Tests
-        run: uv run pytest
+        run: uv run pytest --cov
+
+      # Stores the coverage badge in the branch "python-coverage-comment-action-data" of this repo
+      # (no external service) and comments the coverage of changed lines on pull requests.
+      # Skipped for Dependabot: its pull requests only get a read-only token, so the
+      # comment would fail. The tests above still run for them.
+      - name: Coverage badge
+        if: github.actor != 'dependabot[bot]'
+        uses: py-cov-action/python-coverage-comment-action@v4.5
+        with:
+          GITHUB_TOKEN: ${{ github.token }}

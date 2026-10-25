@@ -1,8 +1,10 @@
 [project]
 name = "application-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI agent that searches German job boards, assesses postings against your CV and writes cover letters."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Meilocora", email = "118931293+Meilocora@users.noreply.github.com" }
 ]
@@ -32,6 +34,7 @@ dev = [
     "pyright>=1.1.414",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
     "respx>=0.23.1",
     "ruff>=0.17.2",
 ]
@@ -43,6 +46,11 @@ asyncio_mode = "auto"
 markers = ["live: calls the real Arbeitsagentur API - run explicitly with `uv run pytest -m live`"]
 # Live tests are skipped by default: they need internet and depend on today's job ads.
 addopts = "-m 'not live'"
+
+[tool.coverage.run]
+source = ["application_agent"]
+# Paths relative to the project, so the coverage file from CI can be read anywhere.
+relative_files = true
 
 [tool.ruff]
 line-length = 120

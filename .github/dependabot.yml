@@ -1,0 +1,23 @@
+# Dependabot checks weekly for newer versions and opens one pull request per group.
+# CI runs on every such pull request - merge when it is green, but see the README
+# ("Dependency updates") for which updates deserve a manual test run first.
+version: 2
+updates:
+  - package-ecosystem: "uv" # pyproject.toml + uv.lock
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      # A dependency goes into the first group it matches - so the dev tools come first.
+      dev-tools:
+        patterns: ["pytest*", "respx", "ruff", "pyright"]
+      core:
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions" # the `uses:` lines in .github/workflows
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
