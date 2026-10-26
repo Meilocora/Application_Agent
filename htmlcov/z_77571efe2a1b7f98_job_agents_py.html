@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/application_agent/job_agents.py: 79%</title>
+    <title>Coverage for src/application_agent/job_agents.py: 100%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_4667309f.css" type="text/css">
     <script src="coverage_html_cb_15cffcd0.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src<span class="sep">/</span>application_agent<span class="sep">/</span>job_agents.py</b>:
-            <span class="pc_cov">79%</span>
+            <span class="pc_cov">100%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">14 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">11<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">3<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">14<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_77571efe2a1b7f98_letters_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-25 07:31 +0000
+            created at 2026-10-26 19:14 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -103,29 +103,29 @@
     <p class="pln"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="key">def</span> <span class="nam">scout_instructions</span><span class="op">(</span><span class="nam">wrapper</span><span class="op">:</span> <span class="nam">RunContextWrapper</span><span class="op">[</span><span class="nam">JobSearchContext</span><span class="op">]</span><span class="op">,</span> <span class="nam">agent</span><span class="op">:</span> <span class="nam">Agent</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="str">&quot;&quot;&quot;Build the system prompt for each run from profile and preferences in the context.&quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">profile</span> <span class="op">=</span> <span class="nam">wrapper</span><span class="op">.</span><span class="nam">context</span><span class="op">.</span><span class="nam">profile</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">    <span class="nam">prefs</span> <span class="op">=</span> <span class="nam">wrapper</span><span class="op">.</span><span class="nam">context</span><span class="op">.</span><span class="nam">preferences</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">profile</span> <span class="op">=</span> <span class="nam">wrapper</span><span class="op">.</span><span class="nam">context</span><span class="op">.</span><span class="nam">profile</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">    <span class="nam">prefs</span> <span class="op">=</span> <span class="nam">wrapper</span><span class="op">.</span><span class="nam">context</span><span class="op">.</span><span class="nam">preferences</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">    <span class="com"># Note: the full address is deliberately NOT part of the prompt, only the postal code.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">    <span class="key">return</span> <span class="fst">f&quot;&quot;&quot;</span><span class="fst">You are an experienced recruiter searching jobs for this candidate.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="fst">What the candidate is looking for (this decides WHAT to search for):</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="fst">- Employment type: </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">employment_type</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="fst">- Target roles: </span><span class="op">{</span><span class="str">&quot;, &quot;</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">target_roles</span><span class="op">)</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="fst">- Additional wishes: </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">wishes</span> <span class="key">or</span> <span class="str">&quot;(none)&quot;</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="fst">Candidate background (use it to judge fit, not to pick search terms):</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="fst">- </span><span class="op">{</span><span class="nam">profile</span><span class="op">.</span><span class="nam">name</span><span class="op">}</span><span class="fst"> - </span><span class="op">{</span><span class="nam">profile</span><span class="op">.</span><span class="nam">headline</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="fst">- Top skills: </span><span class="op">{</span><span class="str">&quot;, &quot;</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">profile</span><span class="op">.</span><span class="nam">skills</span><span class="op">[</span><span class="op">:</span><span class="num">15</span><span class="op">]</span><span class="op">)</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="fst">1. Search for the target roles with several short keywords (German AND English), since job</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="fst">   boards only match literal terms. Also try synonyms of the target roles.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="fst">2. For working student or internship positions, put the type into the keyword, e.g.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="fst">   &quot;Werkstudent Python&quot; or &quot;Praktikum Softwareentwicklung&quot;.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="fst">3. Search at postal code </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">search_location</span> <span class="key">or</span> <span class="nam">profile</span><span class="op">.</span><span class="nam">location</span><span class="op">}</span><span class="fst"> unless the wishes say otherwise.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="fst">4. Shortlist up to </span><span class="op">{</span><span class="nam">MAX_SHORTLIST</span><span class="op">}</span><span class="fst"> promising postings. Leave out obviously wrong ones (other</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="fst">   field, wrong employment type, against the wishes). A detailed assessment follows later,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="fst">   so when in doubt, include a posting.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="fst">Only use ids that a search tool returned to you. Write in English.</span><span class="fst">&quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">    <span class="key">return</span> <span class="fst">f&quot;&quot;&quot;</span><span class="fst">You are an experienced recruiter searching jobs for this candidate.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="fst">What the candidate is looking for (this decides WHAT to search for):</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="fst">- Employment type: </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">employment_type</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="fst">- Target roles: </span><span class="op">{</span><span class="str">&quot;, &quot;</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">target_roles</span><span class="op">)</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="fst">- Additional wishes: </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">wishes</span> <span class="key">or</span> <span class="str">&quot;(none)&quot;</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="fst">Candidate background (use it to judge fit, not to pick search terms):</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="fst">- </span><span class="op">{</span><span class="nam">profile</span><span class="op">.</span><span class="nam">name</span><span class="op">}</span><span class="fst"> - </span><span class="op">{</span><span class="nam">profile</span><span class="op">.</span><span class="nam">headline</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="fst">- Top skills: </span><span class="op">{</span><span class="str">&quot;, &quot;</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">profile</span><span class="op">.</span><span class="nam">skills</span><span class="op">[</span><span class="op">:</span><span class="num">15</span><span class="op">]</span><span class="op">)</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="fst">1. Search for the target roles with several short keywords (German AND English), since job</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="fst">   boards only match literal terms. Also try synonyms of the target roles.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="fst">2. For working student or internship positions, put the type into the keyword, e.g.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="fst">   &quot;Werkstudent Python&quot; or &quot;Praktikum Softwareentwicklung&quot;.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="fst">3. Search at postal code </span><span class="op">{</span><span class="nam">prefs</span><span class="op">.</span><span class="nam">search_location</span> <span class="key">or</span> <span class="nam">profile</span><span class="op">.</span><span class="nam">location</span><span class="op">}</span><span class="fst"> unless the wishes say otherwise.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="fst">4. Shortlist up to </span><span class="op">{</span><span class="nam">MAX_SHORTLIST</span><span class="op">}</span><span class="fst"> promising postings. Leave out obviously wrong ones (other</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="fst">   field, wrong employment type, against the wishes). A detailed assessment follows later,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="fst">   so when in doubt, include a posting.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="fst">Only use ids that a search tool returned to you. Write in English.</span><span class="fst">&quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">job_scout</span> <span class="op">=</span> <span class="nam">Agent</span><span class="op">[</span><span class="nam">JobSearchContext</span><span class="op">]</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -199,7 +199,7 @@
             <a class="nav" href="z_77571efe2a1b7f98_letters_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-25 07:31 +0000
+            created at 2026-10-26 19:14 +0000
         </p>
     </div>
 </footer>

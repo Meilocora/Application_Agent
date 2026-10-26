@@ -6,21 +6,21 @@
 |----------------------------------------- | -------: | -------: | ------: | --------: |
 | src/application\_agent/\_\_init\_\_.py   |      103 |       82 |     20% |31-87, 91-95, 100-123, 128-129, 134-136, 141-142, 147-155 |
 | src/application\_agent/arbeitsagentur.py |       41 |        0 |    100% |           |
-| src/application\_agent/commute.py        |       49 |       36 |     27% |29-33, 37, 44-62, 69-90 |
+| src/application\_agent/commute.py        |       49 |        0 |    100% |           |
 | src/application\_agent/config.py         |       16 |        0 |    100% |           |
 | src/application\_agent/context.py        |       10 |        4 |     60% |     20-23 |
 | src/application\_agent/documents.py      |      128 |      106 |     17% |28-36, 41-51, 56-71, 83-115, 125-130, 135-171, 178-198 |
 | src/application\_agent/export.py         |       57 |       40 |     30% |40-43, 64-117 |
 | src/application\_agent/geo.py            |       10 |        6 |     40% |     12-22 |
-| src/application\_agent/job\_agents.py    |       14 |        3 |     79% |     24-27 |
-| src/application\_agent/letters.py        |       27 |       19 |     30% |12, 16-17, 27-62 |
-| src/application\_agent/matching.py       |       34 |       21 |     38% |26-28, 37-38, 53-56, 64-79 |
-| src/application\_agent/models.py         |       76 |        6 |     92% |51-52, 147-149, 162 |
+| src/application\_agent/job\_agents.py    |       14 |        0 |    100% |           |
+| src/application\_agent/letters.py        |       27 |        0 |    100% |           |
+| src/application\_agent/matching.py       |       34 |       17 |     50% |27, 53-56, 64-79 |
+| src/application\_agent/models.py         |       76 |        3 |     96% |   147-149 |
 | src/application\_agent/preferences.py    |       84 |       71 |     15% |13-15, 19-20, 25-39, 43-50, 55-62, 66-68, 72-86, 91-125 |
 | src/application\_agent/profile.py        |       55 |       38 |     31% |26-36, 41-48, 52-57, 62-70, 75-93 |
 | src/application\_agent/storage.py        |       33 |        0 |    100% |           |
 | src/application\_agent/tools.py          |       15 |        9 |     40% |     29-40 |
-| **TOTAL**                                |  **752** |  **441** | **41%** |           |
+| **TOTAL**                                |  **752** |  **376** | **50%** |           |
 
 
 ## Setup coverage badge
