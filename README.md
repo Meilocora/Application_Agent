@@ -78,9 +78,12 @@ flowchart TD
 
 ### Privacy
 
-- Your full address stays on your machine. The job search only uses your **postal code**, the
-  matcher only sees **commute times**, and the sender block of a cover letter is added by code
-  after the LLM has written the text.
+- The address you enter in the setup is never sent to an LLM. The job search only uses your
+  **postal code**, the matcher only sees **commute times**, and the sender block of a cover
+  letter is added by code after the LLM has written the text. Tests check every prompt for it
+  ([tests/test_privacy.py](tests/test_privacy.py)).
+- Your documents are sent to the LLM once to extract your profile. Whatever they contain - an
+  address in the CV, for example - goes along. Remove what you don't want to share.
 - Your address is geocoded once via OpenStreetMap and only the coordinates are reused.
 - All personal data lives in `data/`, which is excluded from git.
 
@@ -142,11 +145,15 @@ All settings are environment variables, see [.env.example](.env.example).
 ## Development
 
 ```bash
-uv run pytest            # tests - the real API is mocked
-uv run pytest -m live    # one test against the real Arbeitsagentur API
-uv run ruff check        # lint
-uv run pyright           # type check (the checker behind Pylance)
+uv run poe test     # tests - the real API is mocked
+uv run poe live     # one test against the real Arbeitsagentur API
+uv run poe cov      # tests with coverage, report in htmlcov/index.html
+uv run poe lint     # lint (ruff)
+uv run poe types    # type check (pyright, the checker behind Pylance)
+uv run poe check    # lint, type check and coverage - what CI runs
 ```
+
+The tasks are defined under `[tool.poe.tasks]` in `pyproject.toml`; `uv run poe` lists them.
 
 GitHub Actions runs lint, type check and tests on every push.
 

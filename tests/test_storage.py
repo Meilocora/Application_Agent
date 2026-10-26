@@ -4,8 +4,6 @@ Every test gets its own empty database in a temporary folder (fixture `isolated_
 so the tests never touch data/jobs.db and can't influence each other.
 """
 
-from datetime import datetime
-
 import pytest
 
 from application_agent import storage
@@ -29,20 +27,9 @@ def isolated_db(tmp_path, monkeypatch):
     return db_path
 
 
-def freeze_time(monkeypatch, iso: str) -> None:
-    """Make datetime.now() inside storage.py return a fixed time.
-
-    Two saves in one test usually happen within the same second, so without this we
-    couldn't tell found_at (first save) and updated_at (second save) apart.
-    """
-
-    class FrozenDatetime(datetime):
-        @classmethod
-        def now(cls, tz=None):
-            return datetime.fromisoformat(iso)
-
-    # overwrite storage.py's datetime with the frozen one
-    monkeypatch.setattr(storage, "datetime", FrozenDatetime)
+# freeze_time comes from conftest.py. It is needed here because two saves in one test usually
+# happen within the same second - without it, found_at (first save) and updated_at (second
+# save) couldn't be told apart.
 
 
 def scored_job(job_id: str = "job-1", score: int = 70, **job_fields) -> ScoredJob:
@@ -87,8 +74,8 @@ def test_saved_job_comes_back_unchanged():
     assert stored.scored == original
 
 
-def test_new_job_starts_as_new_with_found_at(monkeypatch):
-    freeze_time(monkeypatch, "2026-10-01T08:00:00")
+def test_new_job_starts_as_new_with_found_at(freeze_time):
+    freeze_time(storage, "2026-10-01T08:00:00")
 
     save_jobs([scored_job()])
 
@@ -187,13 +174,13 @@ def test_set_status_changes_only_that_job():
 # ---------------------------------------------------------------------------
 
 
-def test_saving_again_updates_the_assessment_but_keeps_user_data(monkeypatch):
-    freeze_time(monkeypatch, "2026-10-01T08:00:00")
+def test_saving_again_updates_the_assessment_but_keeps_user_data(freeze_time):
+    freeze_time(storage, "2026-10-01T08:00:00")
     save_jobs([scored_job("a", score=60)])
     set_status("a", JobStatus.APPLIED)
 
     # A later search run finds the same posting again and stores a new assessment.
-    freeze_time(monkeypatch, "2026-10-05T09:30:00")
+    freeze_time(storage, "2026-10-05T09:30:00")
     save_jobs([scored_job("a", score=85, application_url="https://jobs.example.com/a")])
 
     [stored] = load_jobs()

@@ -25,7 +25,7 @@ BICYCLE_WARNING = "Bicycle routes are in beta and might sometimes lack clear bic
 
 
 def _next_workday_7am() -> datetime:
-    """Typical commute departure: next Monday-Friday at 08:00 German time."""
+    """Typical commute departure: next Monday-Friday at 07:00 German time."""
     berlin = ZoneInfo("Europe/Berlin")
     day = datetime.now(berlin).date() + timedelta(days=1)
     while day.weekday() >= 5:  # 5 = Saturday, 6 = Sunday

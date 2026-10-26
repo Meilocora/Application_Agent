@@ -31,6 +31,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "poethepoet>=0.49.0",
     "pyright>=1.1.414",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
@@ -38,6 +39,15 @@ dev = [
     "respx>=0.23.1",
     "ruff>=0.17.2",
 ]
+
+# Shortcuts like npm scripts: `uv run poe <task>`, `uv run poe` lists them all.
+[tool.poe.tasks]
+test = { cmd = "pytest", help = "Tests - the real API is mocked" }
+live = { cmd = "pytest -m live", help = "One test against the real Arbeitsagentur API" }
+cov = { cmd = "pytest --cov --cov-report=term-missing --cov-report=html", help = "Tests with coverage, report in htmlcov/index.html" }
+lint = { cmd = "ruff check", help = "Lint" }
+types = { cmd = "pyright", help = "Type check (the checker behind Pylance)" }
+check = { sequence = ["lint", "types", "cov"], help = "Everything CI runs" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
