@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v10.3.2
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           enable-cache: true # reuse downloaded packages between runs
 
@@ -40,6 +40,6 @@ jobs:
       # comment would fail. The tests above still run for them.
       - name: Coverage badge
         if: github.actor != 'dependabot[bot]'
-        uses: py-cov-action/python-coverage-comment-action@v4.5
+        uses: py-cov-action/python-coverage-comment-action@v4.6
         with:
           GITHUB_TOKEN: ${{ github.token }}
